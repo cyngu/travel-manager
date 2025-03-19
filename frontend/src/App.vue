@@ -1,9 +1,12 @@
 <script setup lang="ts">
 import { RouterLink, RouterView } from 'vue-router'
 import HelloWorld from './components/HelloWorld.vue'
+import { ref } from 'vue';
 </script>
 
 <template>
+  {{ healtcheck.status }}
+
   <header>
     <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
 
@@ -83,3 +86,7 @@ nav a:first-of-type {
   }
 }
 </style>
+
+<script lang="ts">
+const healtcheck = ref(await fetch('http://localhost:3000/api/healthcheck'))
+</script>
