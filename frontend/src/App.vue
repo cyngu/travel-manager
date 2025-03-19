@@ -88,5 +88,5 @@ nav a:first-of-type {
 </style>
 
 <script lang="ts">
-const healtcheck = ref(await fetch('http://localhost:3000/api/healthcheck'))
+const healtcheck = ref(await fetch(`${import.meta.env.VITE_API_ENDPOINT}/api/healthcheck`))
 </script>
