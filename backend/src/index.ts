@@ -6,6 +6,7 @@ import pinoHttp from 'pino-http';
 import { router as apiRouter } from './routes';
 import { errorHandler } from './middleware/errorHandler';
 import { config } from './config';
+import 'dotenv/config';
 
 // Initialize logger
 const logger = pino({
@@ -17,10 +18,14 @@ const logger = pino({
 
 const app: Express = express();
 const port = config.port;
+const corsOptions = {
+  origin: process.env.FRONTEND_URL,
+  optionsSuccessStatus: 200
+}
 
 // Middleware
 app.use(helmet());
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(pinoHttp({ logger }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
