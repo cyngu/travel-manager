@@ -3,7 +3,7 @@ import cors from 'cors';
 import helmet from 'helmet';
 import pino from 'pino';
 import pinoHttp from 'pino-http';
-import { router as apiRouter } from './routes';
+import { router as apiRouter } from './controller';
 import { errorHandler } from './middleware/errorHandler';
 import { config } from './config';
 import 'dotenv/config';
