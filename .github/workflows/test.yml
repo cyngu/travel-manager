@@ -1,0 +1,56 @@
+name: CI - Test
+
+
+on:
+  push:
+    branches:
+      - develop
+      - main
+  pull_request:
+    branches:
+      - develop
+      - main
+
+jobs:
+  backend:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout the repo
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '22.9.0'
+      
+      - name: Install backend dependencies
+        run: |
+          cd backend
+          npm ci
+
+      - name: Run backend unit tests
+        run: |
+          cd cd backend
+          npm run test
+
+  frontend:
+    if: false
+    runs-on: ubuntu-22.04
+    steps:
+    - name: Checkout the repo
+      uses: actions/checkout@v4
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '22.9.0'
+
+    - name: Install frontend dependencies
+      run: |
+        cd frontend
+        npm ci
+
+    - name: Run frontend unit tests
+      run: |
+        cd front
+        npm run vitest
