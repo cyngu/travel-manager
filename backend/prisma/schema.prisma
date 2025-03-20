@@ -1,10 +1,54 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
+enum ProfileType {
+  CAR
+  BIKE
+  FOOT
+}
+
 model User {
-  id    Int     @id @default(autoincrement())
-  email String  @unique
-  name  String?
+  id          String      @id @default(uuid())
+  name        String      @db.VarChar(100)
+  email       String      @unique @db.VarChar(255)
+  password    String
+  itineraries Itinerary[]
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+}
+
+model Itinerary {
+  id            String       @id @default(uuid())
+  name          String       @db.VarChar(100)
+  description   String?      @db.Text
+  profile       ProfileType
+  distance      Float
+  estimatedTime Int
+  userId        String
+  user          User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  coordinates   Coordinate[]
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  @@index([userId])
+}
+
+model Coordinate {
+  id          String    @id @default(uuid())
+  latitude    Float
+  longitude   Float
+  position    Int
+  itineraryId String
+  itinerary   Itinerary @relation(fields: [itineraryId], references: [id], onDelete: Cascade)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([itineraryId])
+  @@index([position, itineraryId])
 }
