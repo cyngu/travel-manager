@@ -30,11 +30,10 @@ jobs:
 
       - name: Run backend unit tests
         run: |
-          cd cd backend
+          cd backend
           npm run test
 
   frontend:
-    if: false
     runs-on: ubuntu-22.04
     steps:
     - name: Checkout the repo
