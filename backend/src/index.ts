@@ -13,23 +13,21 @@ import bcrypt from 'bcryptjs';
 // Initialize logger
 const logger = pino({
   level: config.logger.level,
-  transport: config.nodeEnv === 'development' 
-    ? { target: 'pino-pretty' }
-    : undefined
+  transport: config.nodeEnv === 'development' ? { target: 'pino-pretty' } : undefined,
 });
 
 const app: Express = express();
 const port = config.port;
 const corsOptions = {
   origin: process.env.FRONTEND_URL,
-  optionsSuccessStatus: 200
-}
+  optionsSuccessStatus: 200,
+};
 const prisma = new PrismaClient({
   omit: {
     user: {
-      password: true
-    }
-  }
+      password: true,
+    },
+  },
 });
 
 // Middleware
