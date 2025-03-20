@@ -1,0 +1,99 @@
+services:
+  db:
+    image: postgres:17.2-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_PASSWORD_FILE: /run/secrets/postgres_password
+      POSTGRES_USER_FILE: /run/secrets/postgres_user
+      POSTGRES_DB_FILE: /run/secrets/postgres_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    secrets:
+      - postgres_password  
+      - postgres_user
+      - postgres_db
+    healthcheck:
+      test: ["CMD", "pg_isready", "-d", "mydb", "-U", "postgres"]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    env_file:
+      - path: ./backend/.env
+        required: true
+    labels:
+      - "traefik.http.routers.app2.rule=Host(`app2.traefik.me`)"
+      - "traefik.http.routers.app2-tls.tls.domains[0].main=app2.traefik.me"
+      - "traefik.http.routers.app2-tls.tls.domains[0].sans=app2-*.traefik.me"
+      - "traefik.http.routers.app2.tls=true"
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3000/api/healthcheck"]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+    env_file:
+      - path: ./frontend/.env
+        required: true
+    labels:
+      - "traefik.http.routers.app1.rule=Host(`app1.traefik.me`)"
+      - "traefik.http.routers.app1-tls.tls.domains[0].main=app1.traefik.me"
+      - "traefik.http.routers.app1-tls.tls.domains[0].sans=app1-*.traefik.me"
+      - "traefik.http.routers.app1.tls=true"
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost/healthcheck"]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+  # traefik:
+  #   restart: unless-stopped
+  #   image: traefik:v2.0.2
+  #   ports:
+  #     - "80:80"
+  #     - "443:443"
+  #   labels:
+  #     - "traefik.http.services.traefik.loadbalancer.server.port=8080"
+  #   volumes:
+  #     - ./traefik.yml:/etc/traefik/traefik.yml
+  #     - ./tls.yml:/etc/traefik/tls.yml
+  #     - /var/run/docker.sock:/var/run/docker.sock
+  #     - certs:/etc/ssl/traefik
+  #   healthcheck:
+  #       test: ["CMD", "traefik", "healthcheck", "--ping"]
+  #       interval: 60s
+  #       timeout: 10s
+  #       retries: 5
+  # reverse-proxy-https-helper:
+  #   image: alpine
+  #   command: sh -c "cd /etc/ssl/traefik
+  #     && wget traefik.me/cert.pem -O cert.pem
+  #     && wget traefik.me/privkey.pem -O privkey.pem"
+  #   volumes:
+  #     - certs:/etc/ssl/traefik
+
+volumes:
+  postgres_data:
+  # certs:
+
+secrets:
+  postgres_password:
+    file: postgres_password.txt
+  postgres_user:
+    file: postgres_user.txt
+  postgres_db:
+    file: postgres_db.txt
