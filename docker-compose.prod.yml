@@ -1,0 +1,90 @@
+services:
+  db:
+    image: postgres:17.2-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_PASSWORD_FILE: /run/secrets/postgres_password
+      POSTGRES_USER_FILE: /run/secrets/postgres_user
+      POSTGRES_DB_FILE: /run/secrets/postgres_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    secrets:
+      - postgres_password
+      - postgres_user
+      - postgres_db
+    healthcheck:
+      test: ["CMD", "pg_isready", "-d", "mydb", "-U", "postgres"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+  backend:
+    image: ncyril/travel-manager-backend:latest
+    env_file:
+      - path: ./backend/.env
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.backend.rule=Host(`api.travel-manager.myplaylab.fr`)"
+      - "traefik.http.routers.backend.entrypoints=websecure"
+      - "traefik.http.services.backend.loadbalancer.server.port=3000"
+      - "traefik.http.routers.backend.tls.certresolver=myresolver"
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3000/api/healthcheck"]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+  frontend:
+    image: ncyril/travel-manager-frontend:latest
+    env_file:
+      - path: ./frontend/.env
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.frontend.rule=Host(`travel-manager.myplaylab.fr`)"
+      - "traefik.http.routers.frontend.entrypoints=websecure"
+      - "traefik.http.routers.frontend.tls.certresolver=myresolver"
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost/healthcheck"]
+      interval: 60s
+      timeout: 10s
+      retries: 10
+  traefik:
+    restart: unless-stopped
+    image: traefik:v3.3
+    command:
+      #- "--log.level=DEBUG"
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entryPoints.websecure.address=:443"
+      - "--certificatesresolvers.myresolver.acme.tlschallenge=true"
+      #- "--certificatesresolvers.myresolver.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory"
+      - "--certificatesresolvers.myresolver.acme.email=cyril.nguyen@ynov.com"
+      - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
+      - "--ping=true"
+    ports:
+      - "443:443"
+      - "8080:8080"
+    volumes:
+      - "./letsencrypt:/letsencrypt"
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+    labels:
+      - "traefik.http.middlewares.cors.headers.customresponseheaders.Access-Control-Allow-Origin=*"
+      - "traefik.http.middlewares.cors.headers.customresponseheaders.Access-Control-Allow-Methods=GET,POST,OPTIONS"
+      - "traefik.http.middlewares.cors.headers.customresponseheaders.Access-Control-Allow-Headers=*"
+    healthcheck:
+      test: ["CMD", "traefik", "healthcheck", "--ping"]
+      interval: 20s
+      timeout: 10s
+      retries: 5
+volumes:
+  postgres_data:
+
+secrets:
+  postgres_password:
+    file: postgres_password.txt
+  postgres_user:
+    file: postgres_user.txt
+  postgres_db:
+    file: postgres_db.txt
