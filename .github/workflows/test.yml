@@ -51,5 +51,5 @@ jobs:
 
     - name: Run frontend unit tests
       run: |
-        cd front
+        cd frontend
         npm run vitest
