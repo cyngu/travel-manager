@@ -33,7 +33,7 @@ services:
       - "traefik.http.routers.app2-tls.tls.domains[0].main=app2.traefik.me"
       - "traefik.http.routers.app2-tls.tls.domains[0].sans=app2-*.traefik.me"
       - "traefik.http.routers.app2.tls=true"
-      - "traefik.http.services.app1.loadbalancer.server.port=3000"
+      - "traefik.http.services.app2.loadbalancer.server.port=3000"
     depends_on:
       db:
         condition: service_healthy
