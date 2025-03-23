@@ -2,10 +2,13 @@
 import { RouterLink, RouterView } from 'vue-router'
 import HelloWorld from './components/HelloWorld.vue'
 import { ref } from 'vue';
+import { getConfig } from './utils/config';
 </script>
 
 <template>
   {{ healtcheck.status }}
+  -
+  {{ config }}
 
   <header>
     <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
@@ -88,5 +91,6 @@ nav a:first-of-type {
 </style>
 
 <script lang="ts">
-const healtcheck = ref(await fetch(`${import.meta.env.VITE_API_ENDPOINT}/api/healthcheck`))
+const config = getConfig();
+const healtcheck = ref(await fetch(`${config.VITE_API_ENDPOINT}/api/healthcheck`))
 </script>

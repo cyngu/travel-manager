@@ -10,9 +10,11 @@ RUN npm run build && npm prune --production
 
 FROM nginx:1.27.4-alpine
 
-WORKDIR /usr/app/
+WORKDIR /usr/share/nginx/html
 
 COPY --from=builder /usr/app/dist /usr/share/nginx/html
-COPY ./nginx/nginx.conf /etc/nginx/conf.d/default.conf
+COPY ./nginx/nginx.conf /etc/nginx/nginx.conf
+COPY ./nginx/entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
 
-CMD ["nginx", "-g", "daemon off;"]
+CMD ["/entrypoint.sh"]

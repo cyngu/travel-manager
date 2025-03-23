@@ -47,7 +47,7 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
     # ports:
-    #   - "8080:8080"
+    #   - "8081:80"
     env_file:
       - path: ./frontend/.env
         required: true
