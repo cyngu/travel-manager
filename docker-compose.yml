@@ -27,7 +27,7 @@ services:
     #   - "3000:3000"
     env_file:
       - path: ./backend/.env
-        required: true
+        required: false
     labels:
       - "traefik.http.routers.app2.rule=Host(`app2.traefik.me`)"
       - "traefik.http.routers.app2-tls.tls.domains[0].main=app2.traefik.me"
@@ -50,7 +50,7 @@ services:
     #   - "8081:80"
     env_file:
       - path: ./frontend/.env
-        required: true
+        required: false
     labels:
       - "traefik.http.routers.app1.rule=Host(`app1.traefik.me`)"
       - "traefik.http.routers.app1-tls.tls.domains[0].main=app1.traefik.me"
