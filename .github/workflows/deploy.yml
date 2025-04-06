@@ -54,3 +54,5 @@ jobs:
 
             sudo docker compose -f docker-compose.prod.yml pull frontend backend
             sudo docker compose -f docker-compose.prod.yml up -d --build --wait --wait-timeout 1200
+
+            rm -f postgres_db.txt postgres_password.txt postgres_user.txt
