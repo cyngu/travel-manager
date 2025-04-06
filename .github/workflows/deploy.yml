@@ -40,9 +40,9 @@ jobs:
           script: |
             cd travel-manager
 
-            echo ${{ secrets.POSTGRES_DB }} > postgres_db.txt
-            echo ${{ secrets.POSTGRES_PASSWORD }} > postgres_password.txt
-            echo ${{ secrets.POSTGRES_USER }} > postgres_user.txt
+            echo "${{ secrets.POSTGRES_DB }}" > postgres_db.txt
+            echo "${{ secrets.POSTGRES_PASSWORD }}" > postgres_password.txt
+            echo "${{ secrets.POSTGRES_USER }}" > postgres_user.txt
 
             sudo docker compose -f docker-compose.prod.yml pull frontend backend
             sudo docker compose -f docker-compose.prod.yml up -d --build --wait --wait-timeout 1200
