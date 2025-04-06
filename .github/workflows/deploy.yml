@@ -39,18 +39,8 @@ jobs:
           password: ${{ secrets.VPS_PASSWORD }}
           script: |
             cd travel-manager
-
-            cat <<EOF > postgres_db.txt
-            ${{ secrets.POSTGRES_DB }}
-            EOF
-            
-            cat <<EOF > postgres_password.txt
-            ${{ secrets.POSTGRES_PASSWORD }}
-            EOF
-            
-            cat <<EOF > postgres_user.txt
-            ${{ secrets.POSTGRES_USER }}
-            EOF
-
+            printf "%s" "${{ secrets.POSTGRES_DB }}" > postgres_db.txt
+            printf "%s" "${{ secrets.POSTGRES_PASSWORD }}" > postgres_password.txt
+            printf "%s" "${{ secrets.POSTGRES_USER }}" > postgres_user.txt
             sudo docker compose -f docker-compose.prod.yml pull frontend backend
             sudo docker compose -f docker-compose.prod.yml up -d --build --wait --wait-timeout 1200
