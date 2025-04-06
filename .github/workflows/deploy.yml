@@ -1,0 +1,50 @@
+name: CD - Deploy to VPS
+
+on:
+  workflow_run:
+    workflows: ["CI - Test"]
+    types:
+      - completed
+    branches:
+      - main
+
+
+jobs:
+  build_and_push:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout the repo
+        uses: actions/checkout@v4
+      
+      - name: Login to Dockerhub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      
+      - name: Build and push Docker image
+        run: |
+          docker compose build frontend backend
+          docker tag travel-manager-frontend:latest ${{ secrets.DOCKERHUB_USERNAME }}/travel-manager-frontend:latest
+          docker tag travel-manager-backend:latest ${{ secrets.DOCKERHUB_USERNAME }}/travel-manager-backend:latest
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/travel-manager-frontend:latest
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/travel-manager-backend:latest
+      
+      - name: Deploy to VPS
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.VPS_IP }}
+          username: ${{ secrets.VPS_USER }}
+          password: ${{ secrets.VPS_PASSWORD }}
+          script: |
+            cd travel-manager
+
+            echo ${{ secrets.POSTGRES_DB }} > postgres_db.txt
+            echo ${{ secrets.POSTGRES_PASSWORD }} > postgres_password.txt
+            echo ${{ secrets.POSTGRES_USER }} > postgres_user.txt
+
+            sudo docker compose -f docker-compose.prod.yml pull frontend backend
+            sudo docker compose -f docker-compose.prod.yml up -d --build --wait --wait-timeout 1200
+
+            rm -f postgres_db.txt postgres_password.txt postgres_user.txt
