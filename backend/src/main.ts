@@ -3,9 +3,9 @@ import cors from 'cors';
 import helmet from 'helmet';
 import pino from 'pino';
 import pinoHttp from 'pino-http';
-import { router as apiRouter } from './controller';
-import { errorHandler } from './middleware/errorHandler';
-import { config } from './config';
+import { authRouter, healthcheckRouter } from './routes';
+import { errorHandler } from './middlewares/errorHandler';
+import { config } from './configs';
 import 'dotenv/config';
 import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcryptjs';
@@ -38,7 +38,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Routes
-app.use('/api', apiRouter);
+app.use('/api', authRouter);
+app.use('/api', healthcheckRouter);
 
 // Base route
 app.get('/', (req: Request, res: Response) => {
