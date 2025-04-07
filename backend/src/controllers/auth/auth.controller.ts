@@ -1,11 +1,11 @@
 import { Request, Response } from 'express';
 import { login, signup } from '../../services/auth';
 
-export const loginController = (req: Request, res: Response): void => {
+export const loginController = async (req: Request, res: Response): Promise<void> => {
   const { email, password } = req.body;
 
   try {
-    const token = login(email, password);
+    const token = await login(email, password);
     res.json({ token });
   } catch (e) {
     res.status(401).json({ message: (e as Error).message });
