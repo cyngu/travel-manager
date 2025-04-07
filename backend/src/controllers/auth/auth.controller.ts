@@ -4,12 +4,8 @@ import { login, signup } from '../../services/auth';
 export const loginController = async (req: Request, res: Response): Promise<void> => {
   const { email, password } = req.body;
 
-  try {
-    const token = await login(email, password);
-    res.json({ token });
-  } catch (e) {
-    res.status(401).json({ message: (e as Error).message });
-  }
+  const token = await login(email, password); // await needed here!
+  res.json({ token });
 };
 
 export const signupController = async (req: Request, res: Response): Promise<void> => {
@@ -22,3 +18,7 @@ export const signupController = async (req: Request, res: Response): Promise<voi
     res.status(400).json({ message: (e as Error).message });
   }
 };
+
+// async function test() {
+//   login("user@example.com", "secret"); // ✅ ESLint error
+// }
