@@ -3,4 +3,4 @@ import { healthcheckController } from '../controllers';
 
 export const healthcheckRouter = Router();
 
-healthcheckRouter.get('/healthcheck', healthcheckController);
+healthcheckRouter.get('', healthcheckController);
