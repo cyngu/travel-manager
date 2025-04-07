@@ -11,7 +11,7 @@ import 'dotenv/config';
 // Initialize logger
 const logger = pino({
   level: config.logger.level,
-  transport: config.nodeEnv === 'development' ? { target: 'pino-pretty' } : undefined,
+  // transport: config.nodeEnv === 'development' ? { target: 'pino-pretty' } : undefined,
 });
 
 const app: Express = express();
@@ -37,7 +37,7 @@ apiRouter.use('/healthcheck', healthcheckRouter);
 app.use('/api', apiRouter);
 
 // Base route
-app.get('/', (req: Request, res: Response) => {
+app.get('/', (_req: Request, res: Response) => {
   res.json({ message: 'Express + TypeScript Server' });
 });
 

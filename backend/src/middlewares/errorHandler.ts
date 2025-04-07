@@ -3,8 +3,12 @@ import { pino } from 'pino';
 
 const logger = pino();
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export const errorHandler = (err: Error, req: Request, res: Response, next: NextFunction): void => {
+export const errorHandler = (
+  err: Error,
+  _req: Request,
+  res: Response,
+  _next: NextFunction,
+): void => {
   logger.error(err, 'An error occurred');
   res.status(500).json({
     message: 'Internal Server Error',

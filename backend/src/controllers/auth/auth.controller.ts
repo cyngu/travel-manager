@@ -1,24 +1,34 @@
-import { Request, Response } from 'express';
 import { login, signup } from '../../services/auth';
+import {
+  ApiLoginRequest,
+  ApiLoginResponse,
+  ApiSignupRequest,
+  ApiSignupResponse,
+} from '../../schemas/authSchemas';
 
-export const loginController = async (req: Request, res: Response): Promise<void> => {
+export const loginController = async (
+  req: ApiLoginRequest,
+  res: ApiLoginResponse,
+): Promise<void> => {
   const { email, password } = req.body;
 
-  const token = await login(email, password); // await needed here!
+  const token = await login(email, password);
   res.json({ token });
 };
 
-export const signupController = async (req: Request, res: Response): Promise<void> => {
+export const signupController = async (
+  req: ApiSignupRequest,
+  res: ApiSignupResponse,
+): Promise<void> => {
   const { email, password, name } = req.body;
 
   try {
-    const user = await signup(email, password, name);
-    res.json({ user });
+    const token = await signup(email, password, name);
+    res.json({ success: true, data: { token } });
   } catch (e) {
-    res.status(400).json({ message: (e as Error).message });
+    res.status(400).json({
+      success: false,
+      message: (e as Error).message,
+    });
   }
 };
-
-// async function test() {
-//   login("user@example.com", "secret"); // ✅ ESLint error
-// }
