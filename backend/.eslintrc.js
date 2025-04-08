@@ -45,7 +45,7 @@ module.exports = {
     "@typescript-eslint/no-misused-promises": [
       "warn",
       {
-        "checksVoidReturn": true,
+        "checksVoidReturn": false,
         "checksConditionals": true
       }
     ],

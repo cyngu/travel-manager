@@ -1,9 +1,9 @@
 import { Router } from 'express';
 import { loginController, signupController } from '../controllers';
 import { validateRequest } from '../middlewares';
-import { loginSchema } from '../schemas';
+import { LoginSchema, SignupSchema } from '../schemas';
 
 export const authRouter = Router();
 
-authRouter.post('/login', validateRequest(loginSchema), loginController);
-authRouter.post('/signup', signupController);
+authRouter.post('/login', validateRequest(LoginSchema), loginController);
+authRouter.post('/signup', validateRequest(SignupSchema), signupController);

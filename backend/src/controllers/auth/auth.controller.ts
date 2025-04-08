@@ -10,10 +10,17 @@ export const loginController = async (
   req: ApiLoginRequest,
   res: ApiLoginResponse,
 ): Promise<void> => {
-  const { email, password } = req.body;
+  try {
+    const { email, password } = req.body;
 
-  const token = await login(email, password);
-  res.json({ token });
+    const token = await login(email, password);
+    res.json({ success: true, data: { token } });
+  } catch (e) {
+    res.status(400).json({
+      success: false,
+      message: (e as Error).message,
+    });
+  }
 };
 
 export const signupController = async (
