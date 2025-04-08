@@ -5,5 +5,5 @@ import { LoginSchema, SignupSchema } from '../schemas';
 
 export const authRouter = Router();
 
-authRouter.post('/login', validateRequest(LoginSchema), loginController);
+authRouter.post('/login', validateRequest(oginSchema), loginController);
 authRouter.post('/signup', validateRequest(SignupSchema), signupController);

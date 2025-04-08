@@ -28,7 +28,7 @@ jobs:
           cd backend
           npm ci
 
-      - name: Run backend unit tests
+      - name: Run backend tests
         run: |
           cd backend
           npm run lint
