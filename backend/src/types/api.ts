@@ -1,1 +1,3 @@
-export type ApiResponse<T> = { success: true; data: T } | { success: false; message: string };
+export type ApiResponse<T> =
+  | { success: true; data: T }
+  | { success: false; message?: string; issues?: object[] };
