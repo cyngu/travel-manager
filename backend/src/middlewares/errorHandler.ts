@@ -1,9 +1,14 @@
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import { pino } from 'pino';
 
 const logger = pino();
 
-export const errorHandler = (err: Error, req: Request, res: Response): void => {
+export const errorHandler = (
+  err: Error,
+  _req: Request,
+  res: Response,
+  _next: NextFunction,
+): void => {
   logger.error(err, 'An error occurred');
   res.status(500).json({
     message: 'Internal Server Error',
