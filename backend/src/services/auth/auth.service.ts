@@ -1,7 +1,7 @@
 import bcrypt from 'bcryptjs';
-import { createToken, prisma } from '../../utils';
+import { AuthTokens, createToken, prisma, verifyToken } from '../../utils';
 
-export const login = async (email: string, password: string): Promise<string> => {
+export const login = async (email: string, password: string): Promise<AuthTokens> => {
   const user = await prisma.user.findUnique({
     where: {
       email: email,
@@ -23,7 +23,11 @@ export const login = async (email: string, password: string): Promise<string> =>
   return token;
 };
 
-export const signup = async (email: string, password: string, name: string): Promise<string> => {
+export const signup = async (
+  email: string,
+  password: string,
+  name: string,
+): Promise<AuthTokens> => {
   const existingUser = await prisma.user.findUnique({
     where: {
       email: email,
@@ -47,4 +51,19 @@ export const signup = async (email: string, password: string, name: string): Pro
   const token = createToken(user.id, user.name, user.email);
 
   return token;
+};
+
+export const refreshAccessToken = (refreshToken: string): string => {
+  if (!refreshToken) {
+    throw new Error('Refresh token is missing');
+  }
+
+  try {
+    const { id, name, email } = verifyToken(refreshToken);
+    const { accessToken } = createToken(id, name, email);
+
+    return accessToken;
+  } catch (e) {
+    throw e;
+  }
 };

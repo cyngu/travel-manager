@@ -3,6 +3,7 @@ import cors from 'cors';
 import helmet from 'helmet';
 import pino from 'pino';
 import pinoHttp from 'pino-http';
+import cookieParser from 'cookie-parser';
 import { authRouter, healthcheckRouter } from './routes';
 import { errorHandler } from './middlewares/errorHandler';
 import { config } from './configs';
@@ -27,6 +28,7 @@ app.use(cors(corsOptions));
 app.use(pinoHttp({ logger }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser(process.env.SECRET_COOKIE));
 
 // Routes
 const apiRouter = Router();

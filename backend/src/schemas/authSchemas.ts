@@ -41,3 +41,6 @@ type SignupResponseBody = { token: string };
 
 export type ApiSignupRequest = Request<unknown, unknown, SignupRequestBody>;
 export type ApiSignupResponse = Response<ApiResponse<SignupResponseBody>>;
+
+export type ApiRefreshTokenRequest = Request & { cookies: { refreshToken: string } };
+export type ApiRefreshTokenResponse = Response<ApiResponse<{ accessToken: string }>>;
